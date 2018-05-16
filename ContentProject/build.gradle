@@ -1,0 +1,203 @@
+apply plugin: 'war'
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'findbugs'
+apply plugin: 'com.esri.arcgisruntime.java'
+
+allprojects {
+    group = 'com.apporchid'
+    version = '2.0.0'
+
+    apply plugin: 'eclipse'
+
+    task wrapper(type: Wrapper) {
+        gradleVersion = '4.2.1'
+    }
+    
+}
+
+buildscript {
+       ext {
+              springBootVersion = '1.5.6.RELEASE'
+       }
+       repositories {
+       
+                      maven {
+                             credentials {
+                             username "$artifactoryUser"
+                            password "$artifactoryPassword"
+                    }
+                      url "$artifactoryPullUrl" 
+                     } 
+                     
+                     maven {
+            url 'https://esri.bintray.com/arcgis'
+        }
+       }
+       dependencies {
+       
+       classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+       classpath("io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE")
+       classpath 'com.esri.arcgisruntime:gradle-arcgis-java-plugin:1.0.0'
+      
+       }
+}
+   
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    version = '0.0.1-SNAPSHOT'
+    arcgis.version = '100.1.0'
+       repositories {             
+                      maven {
+                             credentials {
+                             username "$artifactoryUser"
+                            password "$artifactoryPassword"
+                    }
+                      url "$artifactoryPullUrl" 
+                     }   
+       
+       }
+
+       
+       configurations.all {
+           exclude group: "log4j"
+           exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+           exclude group: 'org.hibernate', module: 'hibernate-core:5.0.12.Final'
+       }  
+       
+bootRepackage {
+ mainClass = 'com.apporchid.content.ContentApplication'
+}
+
+springBoot {
+ mainClass = 'com.apporchid.content.ContentApplication'
+}
+
+war {
+}
+
+configurations.all {
+  resolutionStrategy {
+      force 'net.minidev:json-smart:2.2.1'
+  }
+}
+
+
+dependencies {
+
+	List axisExModules = [ 'org.mortbay.jetty', 'org.eclipse.jetty.orbit', 'org.eclipse.jetty.aggregate'
+	                       , 'com.sun.jersey', 'org.glassfish.jersey.containers']
+	
+	//hive dependency
+	
+    compile ("com.apporchid:ao-common:${artifactVersion}")
+    compile "com.apporchid:ao-config:${artifactVersion}"
+    compile "com.apporchid:ao-crypto:${artifactVersion}"
+    compile "com.apporchid:ao-core:${artifactVersion}"
+    compile "com.apporchid:ao-jpa:${artifactVersion}"
+    compile "com.apporchid:ao-multitenancy:${artifactVersion}"
+    compile "com.apporchid:ao-license:${artifactVersion}"
+    compile "com.apporchid:ao-schedulers:${artifactVersion}"
+    compile "com.apporchid:ao-security:${artifactVersion}"
+    compile "com.apporchid:cloudseer-common:${artifactVersion}"
+    compile "com.apporchid:cloudseer:${artifactVersion}"
+    compile "com.apporchid:cloudseer-jpa:${artifactVersion}"
+    compile ("com.apporchid:cloudseer-pipeline:${artifactVersion}"){
+		exclude(module: 'guava')
+	}
+    compile "com.apporchid:cloudseer-datasource:${artifactVersion}"     
+    compile "com.apporchid:agora-analytics:${artifactVersion}"
+    compile "com.apporchid:ao-elasticsearch:${artifactVersion}"
+    compile "com.apporchid:vulcanux:${artifactVersion}"
+    
+    
+    compile('org.springframework.boot:spring-boot-starter-aop')
+
+     compile "org.elasticsearch:elasticsearch:6.2.2"
+     compile "org.elasticsearch.client:transport:6.2.2"
+     
+     compile "org.elasticsearch.client:elasticsearch-rest-high-level-client:${elastic_search_version}"
+	 compile "org.elasticsearch.client:elasticsearch-rest-client:${elastic_search_version}" 
+    
+       compile("org.springframework.boot:spring-boot-starter-web") {
+        exclude module: "spring-boot-starter-logging"
+        exclude group: 'org.slf4j'
+        exclude group: 'ch.qos.logback'
+    }
+    compile("org.springframework.boot:spring-boot-starter-actuator"){
+        exclude group: 'org.slf4j'
+         exclude group: 'ch.qos.logback'
+    }
+    compile('org.springframework.boot:spring-boot-starter:1.5.6.RELEASE')
+    compile group: 'net.java.dev.jna', name: 'jna', version: '4.3.0'
+     compile 'org.springframework.hateoas:spring-hateoas:0.23.0.RELEASE'
+     compile "org.springframework.boot:spring-boot-starter-thymeleaf"
+     compile "org.springframework.boot:spring-boot-starter-cloud-connectors"
+     compile ([group:'com.google.code.gson', name:'gson', version:'2.2.2']) 
+     compile group: 'org.mitre.dsmiley.httpproxy', name: 'smiley-http-proxy-servlet', version: '1.7'
+     compile group: 'org.springframework.boot', name: 'spring-boot-starter-freemarker'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-groovy-templates'
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-mustache'
+	compile group: 'org.webjars', name: 'angularjs', version: '1.6.4'
+	compile group: 'org.webjars', name: 'bootstrap', version: '3.3.7'
+	compile group: 'org.webjars', name: 'jquery', version: '3.2.1'
+	
+	compile("io.springfox:springfox-swagger2:${springfox_version}"){
+        exclude module: 'mapstruct'
+        exclude(module: 'guava')
+    }
+   
+  compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.1'    
+  testCompile "org.testng:testng:6.8.13" 
+  testCompile "org.springframework.boot:spring-boot-starter-test"
+  testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.11.RELEASE'
+  testCompile group: 'org.hamcrest', name: 'hamcrest-junit', version: '2.0.0.0' 
+  
+  
+  //CONTENT DEPENDENCIES
+	  
+	compile ('org.apache.hive:hive-jdbc:2.1.0'){
+ 		exclude group: 'org.mortbay.jetty'
+ 		exclude group: 'org.eclipse.jetty.orbit'
+ 		exclude group: 'org.eclipse.jetty.aggregate'
+ 		exclude module: 'servlet-api'
+ 		exclude(module: 'guava')
+ 	}
+ 	compile ('org.apache.hadoop:hadoop-common:2.9.0'){
+ 		//exclude group: 'org.mortbay.jetty'
+ 		exclude module: 'servlet-api'
+ 		exclude(module: 'guava')
+ 	}  
+	  
+  	compile ('com.apporchid.ocr:ao-ocr:1.0.0') {
+        exclude(module: 'guava')
+    }
+    
+    // needed for working with StanfordCoreNLP		
+ 	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0'
+	compile 'edu.stanford.nlp:stanford-corenlp:3.6.0:models'
+	
+    //spring activemq starter dependency 
+	//compile('org.springframework.boot:spring-boot-starter-activemq')
+	//compile('org.apache.activemq:activemq-pool')
+ }
+  bootRun {
+        // Ensures IntelliJ can load resource files
+        addResources = false
+   }
+    
+    task cleanResources(type: Delete) {
+       delete 'build/resources'
+       }
+       
+       clean {
+           delete "target"
+       }
+
+       task stage(dependsOn: 'bootRepackage') {
+       }
+              
+       findbugs {
+              ignoreFailures = true
+       }

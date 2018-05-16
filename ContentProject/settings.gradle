@@ -1,0 +1,3 @@
+rootProject.name = 'ContentProject'
+//include ':ao-server-core'
+//project(':ao-server-core').projectDir = new File('settingsDir','../../ao-server-core')

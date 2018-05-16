@@ -1,0 +1,6 @@
+{
+  "text": "text",
+  "tokenUrl": "http://localhost:8090/oauth/token",
+  "baseurl": "D:/SourceCode/SafetyFormsBackend/ContentProject/src/main/resources/",
+  "call": "call"
+}
